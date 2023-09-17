@@ -1,0 +1,15 @@
+{
+  "name": "csv-to-json-converter",
+  "version": "1.0.0",
+  "description": "A Node.js script to convert CSV to JSON",
+  "main": "csvToJson.js",
+  "scripts": {
+    "start": "./process-inventory.sh"
+  },
+  "author": "Ryan Reece <ryan@reece.ai>",
+  "license": "MIT",
+  "dependencies": {
+    "csv-parser": "^3.0.0",
+    "fs": "^0.0.1-security"
+  }
+}
