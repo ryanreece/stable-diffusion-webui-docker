@@ -1,18 +1,11 @@
 x-base_service: &base_service
-    ports:
-      - "${WEBUI_PORT:-7860}:7860"
-    volumes:
-      - &v1 ./data:/data
-      - &v2 ./output:/output
-    stop_signal: SIGKILL
-    tty: true
-    deploy:
-      resources:
-        reservations:
-          devices:
-              - driver: nvidia
-                device_ids: ['0']
-                capabilities: [compute, utility]
+  ports:
+    - "${WEBUI_PORT:-7860}:7860"
+  volumes:
+    - &v1 ./data:/data
+    - &v2 ./output:/output
+  stop_signal: SIGKILL
+  tty: true
 
 name: webui-docker
 
@@ -23,33 +16,20 @@ services:
     volumes:
       - *v1
 
-  auto: &automatic
-    <<: *base_service
-    profiles: ["auto"]
-    build: ./services/AUTOMATIC1111
-    image: sd-auto:78
-    environment:
-      - CLI_ARGS=--allow-code --medvram --xformers --enable-insecure-extension-access --api
-
-  auto-cpu:
-    <<: *automatic
-    profiles: ["auto-cpu"]
-    deploy: {}
-    environment:
-      - CLI_ARGS=--no-half --precision full --allow-code --enable-insecure-extension-access --api
-
   comfy: &comfy
     <<: *base_service
     profiles: ["comfy"]
     build: ./services/comfy/
     image: sd-comfy:7
+    devices:
+      - nvidia.com/gpu=all
     environment:
       - CLI_ARGS=
-
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=compute,utility
 
   comfy-cpu:
     <<: *comfy
     profiles: ["comfy-cpu"]
-    deploy: {}
     environment:
       - CLI_ARGS=--cpu
